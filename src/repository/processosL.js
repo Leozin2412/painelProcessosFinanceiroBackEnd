@@ -64,26 +64,28 @@ const getFilterOptions = async () => {
     // without an RPC, pulling the data and deriving standard sets.
     const { data, error } = await supabase
       .from('vw_controle_processos')
-      .select('situacao, seguradora, operacao');
+      .select('situacao, seguradora, operacao, alerta_bh');
 
     if (error) throw error;
 
     const situacaoSet = new Set();
     const seguradoraSet = new Set();
     const operacaoSet = new Set();
-
+    const alertaBhSet = new Set();
     if (data) {
       data.forEach(item => {
         if (item.situacao) situacaoSet.add(item.situacao);
         if (item.seguradora) seguradoraSet.add(item.seguradora);
         if (item.operacao) operacaoSet.add(item.operacao);
+        if (item.alerta_bh) alertaBhSet.add(item.alerta_bh);
       });
     }
 
     return {
       situacao: Array.from(situacaoSet).sort(),
       seguradora: Array.from(seguradoraSet).sort(),
-      operacao: Array.from(operacaoSet).sort()
+      operacao: Array.from(operacaoSet).sort(),
+      alerta_bh: Array.from(alertaBhSet).sort()
     };
   } catch (error) {
     throw error;
@@ -115,4 +117,21 @@ const getSuggestions = async (campo, termo) => {
   }
 };
 
-export { getAllProcesses, getFilterOptions, getSuggestions };
+const upsertProcessStatus = async (codigo_sinistro, updates) => {
+  try {
+    const payload = { codigo_sinistro, ...updates };
+
+    const { data, error } = await supabase
+      .from('status_processos_bh')
+      .upsert(payload, { onConflict: 'codigo_sinistro' })
+      .select();
+
+    if (error) throw error;
+
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export { getAllProcesses, getFilterOptions, getSuggestions, upsertProcessStatus };

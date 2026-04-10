@@ -1,4 +1,4 @@
-import { getAllProcesses, getFilterOptions, getSuggestions } from '../repository/processosL.js';
+import { getAllProcesses, getFilterOptions, getSuggestions, upsertProcessStatus } from '../repository/processosL.js';
 
 const getProcesses = async (req, res) => {
   try {
@@ -17,11 +17,22 @@ const getProcesses = async (req, res) => {
 
 const getOptions = async (req, res) => {
   try {
-    // Call the repository for distinct options
-    const data = await getFilterOptions();
-    
-    // Return the compiled JSON arrays
-    return res.status(200).json(data);
+    // Fetch dynamic filter options from the database view
+    const dbOptions = await getFilterOptions();
+
+    // Hardcoded business workflow enum for status_bh.
+    // null MUST be first — it acts as the "Clear Status" sentinel for the front-end.
+    const statusBhOptions = [
+      null,
+      'ok',
+      'corrigir',
+      'pedido de autorização',
+      'revisado',
+      'nf emitida'
+    ];
+
+    // Merge dynamic options with the injected status_bh enum
+    return res.status(200).json({ ...dbOptions, status_bh: statusBhOptions });
   } catch (error) {
     console.error('Error in getOptions:', error);
     return res.status(500).json({ error: error.message || 'Internal Server Error' });
@@ -46,4 +57,29 @@ const getLiveSuggestions = async (req, res) => {
   }
 };
 
-export { getProcesses, getOptions, getLiveSuggestions };
+const updateProcessStatus = async (req, res) => {
+  try {
+    const { codigo_sinistro } = req.params;
+    const { status_bh, obs } = req.body;
+
+    // Validate that at least one field is provided
+    if (status_bh === undefined && obs === undefined) {
+      return res.status(400).json({
+        error: 'Bad Request: at least one field ("status_bh" or "obs") must be provided in the request body.'
+      });
+    }
+
+    // Build the updates object with only the provided fields
+    const updates = {};
+    if (status_bh !== undefined) updates.status_bh = status_bh;
+    if (obs !== undefined) updates.obs = obs;
+
+    const data = await upsertProcessStatus(codigo_sinistro, updates);
+    return res.status(200).json(data);
+  } catch (error) {
+    console.error('Error in updateProcessStatus:', error);
+    return res.status(500).json({ error: error.message || 'Internal Server Error' });
+  }
+};
+
+export { getProcesses, getOptions, getLiveSuggestions, updateProcessStatus };
