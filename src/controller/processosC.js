@@ -46,4 +46,4 @@ const getLiveSuggestions = async (req, res) => {
   }
 };
 
-export default { getProcesses, getOptions, getLiveSuggestions };
+export { getProcesses, getOptions, getLiveSuggestions };

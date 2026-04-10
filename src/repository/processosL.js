@@ -2,7 +2,7 @@ import supabase from '../lib/supabase.js';
 
 const getAllProcesses = async (filters = {}) => {
   try {
-    let query = supabase.from('vw_controle_processos').select('*');
+    let query = supabase.from('vw_controle_processos').select('*', { count: 'exact' });
 
     const validFilters = [
       'situacao',
@@ -32,10 +32,26 @@ const getAllProcesses = async (filters = {}) => {
       }
     }
 
-    const { data, error } = await query;
+    // Pagination Support
+    const page = parseInt(filters.page) || 1;
+    const limit = parseInt(filters.limit) || 50; 
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+
+    query = query.range(from, to);
+
+    const { data, count, error } = await query;
     if (error) throw error;
     
-    return data;
+    return {
+      data,
+      metadata: {
+        totalCount: count,
+        page,
+        limit,
+        totalPages: Math.ceil(count / limit)
+      }
+    };
   } catch (error) {
     throw error;
   }
@@ -99,4 +115,4 @@ const getSuggestions = async (campo, termo) => {
   }
 };
 
-export default{ getAllProcesses, getFilterOptions, getSuggestions }
+export { getAllProcesses, getFilterOptions, getSuggestions };
