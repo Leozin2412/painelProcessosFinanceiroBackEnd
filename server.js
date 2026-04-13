@@ -6,7 +6,7 @@ import tsRoutes from './src/routes/TSroutes.js';
 
 const app = express();
 
-const allowedFrontendUrl = (process.env.FRONTEND_URL || "https://gerador-de-boletins-tradsul.netlify.app").replace(/\/$/, ""); // <-- REMOVIDA A BARRA FINAL
+const allowedFrontendUrl = (/*process.env.FRONTEND_URL ||*/ "https://painelfinanceirotrd.netlify.app/").replace(/\/$/, ""); // <-- REMOVIDA A BARRA FINAL
 
 const localDevelopmentOrigins = [
     "http://127.0.0.1:5500",
