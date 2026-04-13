@@ -16,22 +16,22 @@ const localDevelopmentOrigins = [
     "http://localhost:4000" 
 ];
 const corsOptions = {
-    // origin: (origin, callback) => {
-    //     // Log para debug: veja qual 'origin' o navegador está enviando
-    //     console.log('Origin da requisição:', origin);
-    //     console.log('Allowed Frontend URL:', allowedFrontendUrl);
+    origin: (origin, callback) => {
+        // Log para debug: veja qual 'origin' o navegador está enviando
+        console.log('Origin da requisição:', origin);
+        console.log('Allowed Frontend URL:', allowedFrontendUrl);
 
-    //         if (
-    //             !origin ||
-    //             origin.replace(/\/$/, "") === allowedFrontendUrl.replace(/\/$/, "") || 
-    //             localDevelopmentOrigins.includes(origin.replace(/\/$/, ""))
-    //         ) {
-    //             callback(null, true);
-    //         }else {
-    //         console.error('CORS Error: Not allowed by origin:', origin); 
-    //         callback(new Error('Not allowed by CORS'), false);
-    //     }
-    // },
+            if (
+                !origin ||
+                origin.replace(/\/$/, "") === allowedFrontendUrl.replace(/\/$/, "") || 
+                localDevelopmentOrigins.includes(origin.replace(/\/$/, ""))
+            ) {
+                callback(null, true);
+            }else {
+            console.error('CORS Error: Not allowed by origin:', origin); 
+            callback(new Error('Not allowed by CORS'), false);
+        }
+    },
     methods: 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
     // Certifique-se de listar *todos* os cabeçalhos personalizados que seu frontend envia.
     // 'Content-Type', 'Authorization' são os mais comuns.
