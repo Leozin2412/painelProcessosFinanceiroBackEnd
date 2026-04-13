@@ -32,7 +32,7 @@ const corsOptions = {
             callback(new Error('Not allowed by CORS'), false);
         }
     },
-    methods: 'GET, POST, PUT, DELETE, OPTIONS',
+    methods: 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
     // Certifique-se de listar *todos* os cabeçalhos personalizados que seu frontend envia.
     // 'Content-Type', 'Authorization' são os mais comuns.
     allowedHeaders: ['Content-Type', 'Authorization'],
