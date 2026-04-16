@@ -63,10 +63,10 @@ const getCardsData = async (dataInicio, dataFim, operacao, seguradora, perito) =
   return data?.[0] ?? {
     total_horas: 0,
     valor_total_reais: 0,
-    horas_cobraveis: 0,
-    horas_cobradas: 0,
+    valor_horas_cobraveis: 0,
     valor_horas_cobradas: 0,
-    valor_horas_cobraveis: 0
+    horas_cobraveis: 0,
+    horas_cobradas: 0
   };
 };
 
@@ -87,10 +87,26 @@ const getHorasProduzidas = async (dataInicio, dataFim, operacao, seguradora, per
 };
 
 // ──────────────────────────────────────────────
-// 3. Horas Cobráveis — bar chart (honorario_gerado = FALSE)
+// 3. Horas Cobráveis por Seguradora — bar chart (honorario_gerado = FALSE)
 // ──────────────────────────────────────────────
-const getHorasCobraveis = async (dataInicio, dataFim, operacao, seguradora, perito) => {
-  const { data, error } = await supabase.rpc('dashboard_horas_cobraveis', {
+const getHorasCobraveisSeguradora = async (dataInicio, dataFim, operacao, seguradora, perito) => {
+  const { data, error } = await supabase.rpc('dashboard_horas_cobraveis_seguradora', {
+    p_data_inicio: dataInicio,
+    p_data_fim: dataFim,
+    p_operacao: operacao,
+    p_seguradora: seguradora,
+    p_perito: perito
+  });
+
+  if (error) throw error;
+  return data ?? [];
+};
+
+// ──────────────────────────────────────────────
+// 3.1 Horas Cobráveis por Operação — bar chart (honorario_gerado = FALSE)
+// ──────────────────────────────────────────────
+const getHorasCobraveisOperacao = async (dataInicio, dataFim, operacao, seguradora, perito) => {
+  const { data, error } = await supabase.rpc('dashboard_horas_cobraveis_operacao', {
     p_data_inicio: dataInicio,
     p_data_fim: dataFim,
     p_operacao: operacao,
@@ -138,7 +154,8 @@ export {
   getFilterOptions,
   getCardsData,
   getHorasProduzidas,
-  getHorasCobraveis,
+  getHorasCobraveisSeguradora,
+  getHorasCobraveisOperacao,
   getPizzaSeguradoras,
   getBarrasFaturadoPeriodo
 };

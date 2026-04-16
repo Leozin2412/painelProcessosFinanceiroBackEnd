@@ -2,7 +2,8 @@ import {
   getFilterOptions,
   getCardsData,
   getHorasProduzidas,
-  getHorasCobraveis,
+  getHorasCobraveisSeguradora,
+  getHorasCobraveisOperacao,
   getPizzaSeguradoras,
   getBarrasFaturadoPeriodo
 } from '../repository/chartsL.js';
@@ -73,17 +74,19 @@ const getDashboardData = async (req, res) => {
     const seguradora = toArrayOrNull(req.query.seguradora);
     const perito     = toArrayOrNull(req.query.perito);
 
-    // Fire all 5 queries in parallel for maximum performance
+    // Fire all 6 queries in parallel for maximum performance
     const [
       cards,
       horasProduzidas,
-      horasCobraveis,
+      horasCobraveisSeguradora,
+      horasCobraveisOperacao,
       pizzaSeguradoras,
       barrasFaturadoPeriodo
     ] = await Promise.all([
       getCardsData(dataInicio, dataFim, operacao, seguradora, perito),
       getHorasProduzidas(dataInicio, dataFim, operacao, seguradora, perito),
-      getHorasCobraveis(dataInicio, dataFim, operacao, seguradora, perito),
+      getHorasCobraveisSeguradora(dataInicio, dataFim, operacao, seguradora, perito),
+      getHorasCobraveisOperacao(dataInicio, dataFim, operacao, seguradora, perito),
       getPizzaSeguradoras(dataInicio, dataFim, operacao, seguradora, perito),
       getBarrasFaturadoPeriodo(dataInicio, dataFim, operacao, seguradora, perito)
     ]);
@@ -93,7 +96,8 @@ const getDashboardData = async (req, res) => {
       cards,
       graficos: {
         horasProduzidas,
-        horasCobraveis,
+        horasCobraveisSeguradora,
+        horasCobraveisOperacao,
         pizzaSeguradoras,
         barrasFaturadoPeriodo
       }
