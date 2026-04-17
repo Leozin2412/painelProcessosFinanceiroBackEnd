@@ -1,0 +1,7 @@
+create table public.honorarios_seguradora (
+  id serial not null,
+  seguradora text null,
+  valor_atual numeric(10, 2) null,
+  created_at timestamp with time zone null default now(),
+  constraint honorarios_seguradora_pkey primary key (id)
+) TABLESPACE pg_default;

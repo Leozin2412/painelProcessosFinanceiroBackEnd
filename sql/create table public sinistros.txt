@@ -1,0 +1,168 @@
+create table public.sinistros (
+  ident_sinistro bigint not null,
+  ident_compania bigint null,
+  nro_correlativo integer null,
+  codigo_sinistro text null,
+  causa_sinistro text null,
+  ident_seguradora bigint null,
+  ident_apolice bigint null,
+  ident_operacao bigint null,
+  ident_cobertura bigint null,
+  ident_segurado bigint null,
+  ident_corretora bigint null,
+  ident_regulador bigint null,
+  ident_regulador_principal bigint null,
+  ident_coordenador bigint null,
+  ident_contato_seguradora bigint null,
+  ident_contato_corretora bigint null,
+  ident_situacao bigint null,
+  ident_ramo bigint null,
+  ident_tipo_vistoria bigint null,
+  data_ocorrencia timestamp with time zone null,
+  data_aviso_seguradora timestamp with time zone null,
+  data_entrada timestamp with time zone null,
+  dat_criacao_sinistro timestamp with time zone null,
+  dat_modificacao_sinistro timestamp with time zone null,
+  dat_ultima_situacao timestamp with time zone null,
+  vigencia_inicial timestamp with time zone null,
+  vigencia_final timestamp with time zone null,
+  data_vistoria timestamp with time zone null,
+  data_conclusao_vistoria timestamp with time zone null,
+  data_ultimo_documento_recebido timestamp with time zone null,
+  data_primeiro_contato timestamp with time zone null,
+  data_envio_drl timestamp with time zone null,
+  data_ultima_reiteracao timestamp with time zone null,
+  regulador text null,
+  regulador_principal text null,
+  coordenador text null,
+  contato_seguradora text null,
+  email_contato_seguradora text null,
+  telefones_contato_seguradora text null,
+  contato_corretora text null,
+  telefone1_contato_corretora text null,
+  telefone2_contato_corretora text null,
+  email_contato_corretora text null,
+  cargo_contato_corretora text null,
+  nro_segurado text null,
+  nro_seguradora text null,
+  nro_corretora text null,
+  nro_aviso text null,
+  nro_apolice text null,
+  relat_preliminar_finalizado timestamp with time zone null,
+  relat_preliminar_enviado_seguradora timestamp with time zone null,
+  relat_final_finalizado timestamp with time zone null,
+  relat_final_enviado_seguradora timestamp with time zone null,
+  operacao text null,
+  cobertura text null,
+  coberturas_adicionais text null,
+  seguradora text null,
+  segurado text null,
+  corretora text null,
+  estipulante text null,
+  loja_franqueado_produto text null,
+  situacao text null,
+  ramo text null,
+  valor_is numeric(20, 4) null,
+  valor_franquia numeric(20, 4) null,
+  descricao_franquia text null,
+  carencia text null,
+  descricao_natureza_danos text null,
+  endosso text null,
+  condicoes_gerais text null,
+  valor_reclamado numeric(20, 4) null,
+  valor_indenizacao numeric(20, 4) null,
+  valor_reserva_seguradora numeric(20, 4) null,
+  estimativa_prejuizo numeric(20, 4) null,
+  estimativa_honorario numeric(20, 4) null,
+  total_despesas numeric(20, 4) null,
+  total_honorarios numeric(20, 4) null,
+  local_vistoria text null,
+  estado text null,
+  sigla_estado text null,
+  cidade text null,
+  cep text null,
+  endereco text null,
+  bairro text null,
+  numero text null,
+  complemento text null,
+  informacoes_adicionais text null,
+  local_risco text null,
+  estado_local_risco text null,
+  sigla_estado_local_risco text null,
+  cidade_local_risco text null,
+  cep_local_risco text null,
+  endereco_local_risco text null,
+  bairro_local_risco text null,
+  numero_local_risco text null,
+  complemento_local_risco text null,
+  informacoes_adicionais_local_risco text null,
+  tem_vistoria_agendada boolean null,
+  descricao_vistoria text null,
+  prestador_servico text null,
+  periodo_vistoria text null,
+  tipo_vistoria text null,
+  ultima_observacao_processo text null,
+  historico_observacoes text null,
+  judicial boolean null,
+  salvados boolean null,
+  ressarcimento boolean null,
+  sem_cobertura boolean null,
+  suspeita_fraude boolean null,
+  prejuizo_inferior_franquia boolean null,
+  created_at timestamp with time zone null default now(),
+  updated_at timestamp with time zone null default now(),
+  uf_dashboard character varying(2) null,
+  dados_gclaims jsonb null default '{}'::jsonb,
+  pontos_importantes jsonb null default '[]'::jsonb,
+  historico_drl jsonb null default '[]'::jsonb,
+  data_primeira_solicitacao_documentos timestamp with time zone null,
+  data_ultima_manifestacao_segurado timestamp with time zone null,
+  data_conclusao_relatorio_vistoria timestamp with time zone null,
+  url_drive_pasta text null,
+  drive_folder_id text null,
+  drive_url text null,
+  chat_url text null,
+  link_google_chat text null,
+  drive_financeiro_url text null,
+  constraint sinistros_pkey primary key (ident_sinistro)
+) TABLESPACE pg_default;
+
+create index IF not exists idx_sinistros_situacao on public.sinistros using btree (situacao) TABLESPACE pg_default;
+
+create index IF not exists idx_sinistros_seguradora on public.sinistros using btree (seguradora) TABLESPACE pg_default;
+
+create index IF not exists idx_sinistros_operacao on public.sinistros using btree (operacao) TABLESPACE pg_default;
+
+create index IF not exists idx_sinistros_cobertura on public.sinistros using btree (cobertura) TABLESPACE pg_default;
+
+create index IF not exists idx_sinistros_dat_criacao on public.sinistros using btree (dat_criacao_sinistro) TABLESPACE pg_default;
+
+create index IF not exists idx_sinistros_dat_modificacao on public.sinistros using btree (dat_modificacao_sinistro) TABLESPACE pg_default;
+
+create index IF not exists idx_sinistros_codigo_sinistro on public.sinistros using btree (codigo_sinistro) TABLESPACE pg_default;
+
+create index IF not exists idx_sinistros_situacao_trgm on public.sinistros using gin (situacao gin_trgm_ops) TABLESPACE pg_default;
+
+create index IF not exists idx_sinistros_segurado_trgm on public.sinistros using gin (segurado gin_trgm_ops) TABLESPACE pg_default;
+
+create index IF not exists idx_sinistros_seguradora_trgm on public.sinistros using gin (seguradora gin_trgm_ops) TABLESPACE pg_default;
+
+create index IF not exists idx_sinistros_cobertura_trgm on public.sinistros using gin (cobertura gin_trgm_ops) TABLESPACE pg_default;
+
+create index IF not exists idx_sinistros_operacao_trgm on public.sinistros using gin (operacao gin_trgm_ops) TABLESPACE pg_default;
+
+create index IF not exists idx_sinistros_codigo_sinistro_trgm on public.sinistros using gin (codigo_sinistro gin_trgm_ops) TABLESPACE pg_default;
+
+create index IF not exists idx_sinistros_nro_seguradora_trgm on public.sinistros using gin (nro_seguradora gin_trgm_ops) TABLESPACE pg_default;
+
+create index IF not exists idx_sinistros_dat_criacao_desc on public.sinistros using btree (dat_criacao_sinistro desc) TABLESPACE pg_default;
+
+create trigger cria_pasta_drive
+after INSERT on sinistros for EACH row
+execute FUNCTION supabase_functions.http_request (
+  'https://portal-tradsul-front-end.vercel.app/api/webhooks/supabase/sinistros',
+  'POST',
+  '{"Content-type":"application/json"}',
+  '{}',
+  '5000'
+);

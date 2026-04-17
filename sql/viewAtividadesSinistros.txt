@@ -1,0 +1,14 @@
+create view public.view_atividades_sinistros as
+select
+  COALESCE(s.seguradora, 'Sem Seguradora'::text) as seguradora,
+  s.segurado,
+  COALESCE(s.nro_seguradora, 'N/A'::text) as nro_seguradora,
+  t.codigo_sinistro,
+  t.dt_inicial,
+  t.dt_final,
+  t.descricao_tarefa,
+  t.tp_incidencia,
+  t.regulador_prestador
+from
+  timesheets t
+  left join sinistros s on t.codigo_sinistro = s.codigo_sinistro;

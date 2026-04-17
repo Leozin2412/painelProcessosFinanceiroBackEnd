@@ -1,0 +1,81 @@
+create view public.vw_controle_processos as
+with
+  resumo_timesheets as (
+    select
+      timesheets.codigo_sinistro,
+      max(
+        case
+          when timesheets.honorario_gerado = true then timesheets.dt_inicial
+          else null::timestamp with time zone
+        end
+      ) as dat_ultima_cobranca,
+      COALESCE(
+        sum(
+          case
+            when timesheets.honorario_gerado = false
+            or timesheets.honorario_gerado is null then timesheets.total_decimal
+            else 0::numeric
+          end
+        ),
+        0::numeric
+      ) as total_h_cobrar,
+      COALESCE(
+        sum(
+          case
+            when timesheets.honorario_gerado = true then timesheets.total_decimal
+            else 0::numeric
+          end
+        ),
+        0::numeric
+      ) as total_h_cobradas,
+      COALESCE(sum(timesheets.total_decimal), 0::numeric) as total_h_sinistro
+    from
+      timesheets
+    group by
+      timesheets.codigo_sinistro
+  )
+select
+  case
+    when upper(s.situacao) = any (
+      array[
+        'CONCLUÍDO FINANCEIRAMENTE'::text,
+        'CONCLUIDO FINANCEIRAMENTE'::text,
+        'CONCLUÍDO TECNICAMENTE'::text,
+        'CONCLUIDO TECNICAMENTE'::text
+      ]
+    ) then upper(s.situacao)
+    else 'EM ABERTO'::text
+  end as situacao,
+  s.codigo_sinistro,
+  s.dat_criacao_sinistro,
+  s.segurado,
+  s.seguradora,
+  s.operacao,
+  rt.dat_ultima_cobranca,
+  case
+    when rt.dat_ultima_cobranca is not null then case
+      when (CURRENT_DATE - rt.dat_ultima_cobranca::date) > 90 then 'COBRANÇA IMEDIATA'::text
+      else 'NO PRAZO'::text
+    end
+    else case
+      when (CURRENT_DATE - s.dat_criacao_sinistro::date) > 90 then 'COBRANÇA IMEDIATA'::text
+      else 'NO PRAZO'::text
+    end
+  end as alerta_cobranca,
+  sp.status_bh,
+  sp.obs,
+  COALESCE(rt.total_h_cobrar, 0::numeric) as total_h_cobrar,
+  COALESCE(rt.total_h_cobradas, 0::numeric) as total_h_cobradas,
+  COALESCE(rt.total_h_sinistro, 0::numeric) as total_h_sinistro,
+  case
+    when COALESCE(rt.total_h_cobrar, 0::numeric) >= 20::numeric then 'GERAR BH'::text
+    else 'NÃO GERAR'::text
+  end as alerta_bh
+from
+  sinistros s
+  left join status_processos_bh sp on s.codigo_sinistro = sp.codigo_sinistro::text
+  left join resumo_timesheets rt on s.codigo_sinistro = rt.codigo_sinistro
+where
+  upper(s.operacao) <> all (
+    array['MASSIFICADOS'::text, 'ADMINISTRATIVO'::text]
+  );

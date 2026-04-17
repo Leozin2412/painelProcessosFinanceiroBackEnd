@@ -1,0 +1,34 @@
+create table public.status_processos_bh (
+  id serial not null,
+  codigo_sinistro character varying(70) null,
+  status_bh character varying(30) null default null::character varying,
+  ultima_atualizacao timestamp with time zone null default now(),
+  obs text null,
+  constraint status_processos_bh_pkey primary key (id),
+  constraint unique_codigo_sinistro unique (codigo_sinistro),
+  constraint status_processos_bh_status_bh_check check (
+    (
+      (status_bh is null)
+      or (
+        (status_bh)::text = any (
+          (
+            array[
+              'ok'::character varying,
+              'revisado'::character varying,
+              'pedido de autorização'::character varying,
+              'corrigir'::character varying,
+              'nf emitida'::character varying
+            ]
+          )::text[]
+        )
+      )
+    )
+  )
+) TABLESPACE pg_default;
+
+create trigger trigger_atualiza_data_bh BEFORE
+update on status_processos_bh for EACH row when (
+  old.status_bh::text is distinct from new.status_bh::text
+  or old.obs is distinct from new.obs
+)
+execute FUNCTION update_ultima_atualizacao_bh ();
