@@ -4,6 +4,7 @@ import config from './src/config.js';
 import processosRoutes from './src/routes/processosR.js';
 import tsRoutes from './src/routes/TSroutes.js';
 import chartsRoutes from './src/routes/chartsR.js';
+import loginRoutes from './src/routes/loginR.js';
 const app = express();
 
 const allowedFrontendUrl = (process.env.FRONTEND_URL || "https://painelfinanceirotrd.netlify.app/").replace(/\/$/, ""); // <-- REMOVIDA A BARRA FINAL
@@ -49,6 +50,7 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 app.use('/api', processosRoutes);
 app.use('/api/charts', chartsRoutes);
+app.use('/api/auth', loginRoutes);
 
 
 app.use('/automacao', tsRoutes);
